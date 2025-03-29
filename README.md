@@ -1,7 +1,7 @@
 # Crypto Tracker Pro
 # https://qms85.github.io/CryptoTrackerPro/
 
-This Crypto Tracker Pro App Allows You To Buy & Sell Crypto:
+This Crypto Tracker Pro App Allows You To Buy & Sell Crypto Using The Available Balance:
 Bitcoin, Ethereum & Dogecoin
 
 **Transaction system & Key features Explained:**
