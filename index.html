@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Investment App</title>
+    <style>
+        /* CSS for styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: #2d2d2d;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .market-data, .portfolio {
+            background: #252525;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .transaction-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        input, select, button {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .crypto-list {
+            margin-top: 1rem;
+        }
+
+        .portfolio-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- HTML Structure -->
+    <div class="header">
+        <h1>Crypto Tracker Pro</h1>
+        <p>Available Balance: $<span id="balance">50000</span></p>
+    </div>
+
+    <div class="container">
+        <div class="dashboard">
+            <!-- Market Data Section -->
+            <div class="market-data">
+                <h2>Market Prices</h2>
+                <div class="crypto-list" id="crypto-list">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
+
+            <!-- Portfolio Section -->
+            <div class="portfolio">
+                <h2>Your Portfolio</h2>
+                <div id="portfolio-items">
+                    <!-- Portfolio items will be added here -->
+                </div>
+                <div class="transaction-form">
+                    <select id="crypto-select">
+                        <option value="BTC">Bitcoin</option>
+                        <option value="ETH">Ethereum</option>
+                        <option value="DOGE">Dogecoin</option>
+                    </select>
+                    <input type="number" id="investment-amount" placeholder="Amount in USD">
+                    <button onclick="executeTransaction('buy')">Buy</button>
+                    <button onclick="executeTransaction('sell')">Sell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Logic
+
+        // Mock cryptocurrency data (normally you'd fetch this from an API)
+        const cryptoData = {
+            BTC: { name: 'Bitcoin', price: 45000, holdings: 0 },
+            ETH: { name: 'Ethereum', price: 3200, holdings: 0 },
+            DOGE: { name: 'Dogecoin', price: 0.15, holdings: 0 }
+        };
+
+        // User data
+        let user = {
+            balance: 50000,
+            portfolio: {}
+        };
+
+        // Initialize application
+        function init() {
+            renderMarketData();
+            updatePortfolioDisplay();
+        }
+
+        // Display market data
+        function renderMarketData() {
+            const container = document.getElementById('crypto-list');
+            container.innerHTML = Object.entries(cryptoData).map(([symbol, data]) => `
+                <div class="portfolio-item">
+                    <div>${data.name} (${symbol})</div>
+                    <div>$${data.price.toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // Handle transactions
+        function executeTransaction(type) {
+            const symbol = document.getElementById('crypto-select').value;
+            const amount = parseFloat(document.getElementById('investment-amount').value);
+            const crypto = cryptoData[symbol];
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if (type === 'buy') {
+                if (amount > user.balance) {
+                    alert('Insufficient funds');
+                    return;
+                }
+                user.balance -= amount;
+                crypto.holdings += amount / crypto.price;
+            } else {
+                if (crypto.holdings < (amount / crypto.price)) {
+                    alert('Insufficient holdings');
+                    return;
+                }
+                user.balance += amount;
+                crypto.holdings -= amount / crypto.price;
+            }
+
+            updatePortfolioDisplay();
+            updateBalanceDisplay();
+        }
+
+        // Update portfolio display
+        function updatePortfolioDisplay() {
+            const container = document.getElementById('portfolio-items');
+            container.innerHTML = Object.entries(cryptoData)
+                .filter(([_, data]) => data.holdings > 0)
+                .map(([symbol, data]) => `
+                    <div class="portfolio-item">
+                        <div>${data.name}</div>
+                        <div>${data.holdings.toFixed(4)} ${symbol}</div>
+                        <div>$${(data.holdings * data.price).toFixed(2)}</div>
+                    </div>
+                `).join('') || '<p>No investments yet</p>';
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            document.getElementById('balance').textContent = user.balance.toFixed(2);
+        }
+
+        // Initialize app when page loads
+        init();
+    </script>
+</body>
+</html>
